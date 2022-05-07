@@ -22,6 +22,21 @@ open class ExtensionService : Service() {
 
         private const val BROADCAST_SENDER_PERMISSION =
             "org.fdroid.fdroid.privileged.BROADCAST_SENDER_PERMISSION"
+
+        private const val INSTALL_SUCCEEDED = 1
+        private const val INSTALL_FAILED_INTERNAL_ERROR = -110
+        private const val DELETE_SUCCEEDED = 1
+        private const val DELETE_FAILED_INTERNAL_ERROR = -1
+
+        private val INSTALL_RETURN_CODES = mapOf(
+            PackageInstaller.STATUS_SUCCESS to INSTALL_SUCCEEDED,
+            PackageInstaller.STATUS_FAILURE to INSTALL_FAILED_INTERNAL_ERROR,
+        ).withDefault { 0 }
+
+        private val DELETE_RETURN_CODES = mapOf(
+            PackageInstaller.STATUS_SUCCESS to DELETE_SUCCEEDED,
+            PackageInstaller.STATUS_FAILURE to DELETE_FAILED_INTERNAL_ERROR,
+        ).withDefault { 0 }
     }
 
     private val mAccessProtectionHelper by lazy {
@@ -42,13 +57,19 @@ open class ExtensionService : Service() {
                 when (val status =
                     intent.getIntExtra(PackageInstaller.EXTRA_STATUS, Int.MIN_VALUE)) {
                     PackageInstaller.STATUS_SUCCESS -> {
-                        callback.handleResult(packageName, PackageInstaller.STATUS_SUCCESS)
+                        callback.handleResult(
+                            packageName,
+                            DELETE_RETURN_CODES.getValue(status)
+                        )
                     }
                     else -> {
                         Log.e(
                             TAG, "Error $status while installing $packageName: $statusMessage"
                         )
-                        callback.handleResult(packageName, PackageInstaller.STATUS_FAILURE)
+                        callback.handleResult(
+                            packageName,
+                            DELETE_RETURN_CODES.getValue(status)
+                        )
                     }
                 }
             }
@@ -105,7 +126,10 @@ open class ExtensionService : Service() {
                     innerCreateSession(packageName)
                 } catch (e: Exception) {
                     Log.e(TAG, "Can't create session for $packageName ${e.message}")
-                    callback.handleResult(packageName, PackageInstaller.STATUS_FAILURE)
+                    callback.handleResult(
+                        packageName,
+                        INSTALL_RETURN_CODES.getValue(PackageInstaller.STATUS_FAILURE)
+                    )
                     mSessionInfoMap.remove(packageName)
                     return
                 }
@@ -115,7 +139,10 @@ open class ExtensionService : Service() {
                     mOpenSessionMap[packageName] = session
                 } catch (e: Exception) {
                     Log.e(TAG, "Can't open session for $packageName: ${e.message}")
-                    callback.handleResult(packageName, PackageInstaller.STATUS_FAILURE)
+                    callback.handleResult(
+                        packageName,
+                        INSTALL_RETURN_CODES.getValue(PackageInstaller.STATUS_FAILURE)
+                    )
                     mSessionInfoMap.remove(packageName)
                     return
                 }
@@ -136,7 +163,10 @@ open class ExtensionService : Service() {
             Log.e(
                 TAG, "Unexpected exception while installing: $packageName: ${e.message}"
             )
-            callback.handleResult(packageName, PackageInstaller.STATUS_FAILURE)
+            callback.handleResult(
+                packageName,
+                INSTALL_RETURN_CODES.getValue(PackageInstaller.STATUS_FAILURE)
+            )
         }
     }
 
@@ -281,7 +311,10 @@ open class ExtensionService : Service() {
         when (val status = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, Int.MIN_VALUE)) {
             PackageInstaller.STATUS_SUCCESS -> {
                 cancelSession(sessionId, packageName)
-                callback.handleResult(packageName, PackageInstaller.STATUS_SUCCESS)
+                callback.handleResult(
+                    packageName,
+                    INSTALL_RETURN_CODES.getValue(status)
+                )
             }
             PackageInstaller.STATUS_PENDING_USER_ACTION -> {
                 val activityIntent: Intent = intent.getParcelableExtra(Intent.EXTRA_INTENT)!!
@@ -294,7 +327,10 @@ open class ExtensionService : Service() {
                 Log.e(
                     TAG, "Error $status while installing $packageName: $statusMessage"
                 )
-                callback.handleResult(packageName, PackageInstaller.STATUS_FAILURE)
+                callback.handleResult(
+                    packageName,
+                    INSTALL_RETURN_CODES.getValue(status)
+                )
             }
         }
     }
