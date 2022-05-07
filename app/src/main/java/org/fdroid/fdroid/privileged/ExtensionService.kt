@@ -350,18 +350,16 @@ open class ExtensionService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val mySessions = packageManager.packageInstaller.mySessions
-        for (i in mySessions.indices) {
-            val sessionInfo = mySessions[i]
-            val packageName = sessionInfo.appPackageName
-            val oldInfo = mSessionInfoMap.put(packageName, sessionInfo)
+        packageManager.packageInstaller.mySessions.forEach {
+            val packageName = it.appPackageName
+            val oldInfo = mSessionInfoMap.put(packageName, it)
 
             // Checking for old info is strictly for logging purposes
             if (oldInfo != null) {
                 Log.w(
                     TAG,
                     "Multiple sessions for $packageName found. " +
-                            "Removing ${oldInfo.sessionId} & keeping ${mySessions[i].sessionId}"
+                            "Removing ${oldInfo.sessionId} & keeping ${it.sessionId}"
                 )
             }
         }
