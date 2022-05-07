@@ -35,13 +35,14 @@ interface IPrivilegedService {
      * 'content:' URI.
      * @param flags - possible values: {@link #INSTALL_FORWARD_LOCK},
      * {@link #INSTALL_REPLACE_EXISTING}, {@link #INSTALL_ALLOW_TEST}.
-     * @param installerPackageName Package name of the application that is performing the
+     * @param installerPackageName Optional package name of the application that is performing the
      * installation. This identifies which market the package came from.
+     * @param packageName The name of the package to install
      * @param callback An callback to get notified when the package installation is
      * complete.
      */
     oneway void installPackage(in Uri packageURI, in int flags, in String installerPackageName,
-                        in IPrivilegedCallback callback);
+                        in String packageName, in IPrivilegedCallback callback);
 
     /**
      * - Docs based on PackageManager.deletePackage()
@@ -51,13 +52,16 @@ interface IPrivilegedService {
      * be posted back to the given observer.  A deletion will fail if the
      * named package cannot be found, or if the named package is a "system package".
      *
+     * @param installerPackageName Optional package name of the application that is performing the
+     * deletion. This identifies which market the package came from.
      * @param packageName The name of the package to delete
      * @param flags - possible values: {@link #DELETE_KEEP_DATA},
      * {@link #DELETE_ALL_USERS}.
      * @param callback An callback to get notified when the package deletion is
      * complete.
      */
-    oneway void deletePackage(in String packageName, in int flags, in IPrivilegedCallback callback);
+    oneway void deletePackage(in String installerPackageName, in String packageName, in int flags,
+                        in IPrivilegedCallback callback);
 
     List<PackageInfo> getInstalledPackages(in int flags);
 }

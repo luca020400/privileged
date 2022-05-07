@@ -46,6 +46,7 @@ class ExtensionService : Service() {
     private val mOpenSessionMap: MutableMap<String?, PackageInstaller.Session?> = mutableMapOf()
 
     private fun uninstall(
+        installerPackageName: String? = this.packageName,
         packageName: String,
         callback: IPrivilegedCallback
     ) {
@@ -91,7 +92,9 @@ class ExtensionService : Service() {
                     or PendingIntent.FLAG_MUTABLE
         )
 
-        packageManager.setInstallerPackageName(packageName, getPackageName())
+        if (installerPackageName != null) {
+            packageManager.setInstallerPackageName(packageName, installerPackageName)
+        }
         packageManager.packageInstaller.uninstall(
             packageName,
             pendingIntent.intentSender
@@ -103,11 +106,14 @@ class ExtensionService : Service() {
      * This must not be called on main thread.
      */
     private fun install(
+        installerPackageName: String? = this.packageName,
         packageName: String,
         packageUri: Uri,
         callback: IPrivilegedCallback
     ) {
-        packageManager.setInstallerPackageName(packageName, getPackageName())
+        if (installerPackageName != null) {
+            packageManager.setInstallerPackageName(packageName, installerPackageName)
+        }
         // 0. Generic try/catch block because I am not really sure what exceptions
         // might be thrown by PackageInstaller and I want to handle them
         // at least slightly gracefully.
@@ -342,17 +348,19 @@ class ExtensionService : Service() {
         override fun installPackage(
             packageURI: Uri,
             flags: Int,
-            installerPackageName: String,
+            installerPackageName: String?,
+            packageName: String,
             callback: IPrivilegedCallback
         ) {
             if (!mAccessProtectionHelper.isCallerAllowed()) {
                 return
             }
 
-            install(installerPackageName, packageURI, callback)
+            install(installerPackageName, packageName, packageURI, callback)
         }
 
         override fun deletePackage(
+            installerPackageName: String?,
             packageName: String,
             flags: Int,
             callback: IPrivilegedCallback
@@ -361,7 +369,7 @@ class ExtensionService : Service() {
                 return
             }
 
-            uninstall(packageName, callback)
+            uninstall(installerPackageName, packageName, callback)
         }
 
         override fun getInstalledPackages(flags: Int): MutableList<PackageInfo> {
