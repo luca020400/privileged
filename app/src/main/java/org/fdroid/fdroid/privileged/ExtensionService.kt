@@ -10,7 +10,7 @@ import android.content.pm.PackageInstaller.SessionParams
 import android.net.Uri
 import android.util.Log
 
-open class ExtensionService : Service() {
+class ExtensionService : Service() {
     companion object {
         const val TAG = "ExtensionService"
 
@@ -371,7 +371,7 @@ open class ExtensionService : Service() {
         }
     }
 
-    protected fun getMatchStaticSharedLibraries(): Int {
+    private fun getMatchStaticSharedLibraries(): Int {
         try {
             //val field =
             //    PackageManager::class.java.getDeclaredField("MATCH_STATIC_SHARED_LIBRARIES")
