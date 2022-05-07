@@ -305,14 +305,14 @@ open class ExtensionService : Service() {
         override fun installPackage(
             packageURI: Uri,
             flags: Int,
-            packageName: String,
+            installerPackageName: String,
             callback: IPrivilegedCallback
         ) {
             if (!mAccessProtectionHelper.isCallerAllowed()) {
                 return
             }
 
-            install(packageName, packageURI, callback)
+            install(installerPackageName, packageURI, callback)
         }
 
         override fun deletePackage(

@@ -35,12 +35,12 @@ interface IPrivilegedService {
      * 'content:' URI.
      * @param flags - possible values: {@link #INSTALL_FORWARD_LOCK},
      * {@link #INSTALL_REPLACE_EXISTING}, {@link #INSTALL_ALLOW_TEST}.
-     * @param packageName The name of the package to install
+     * @param installerPackageName Package name of the application that is performing the
      * installation. This identifies which market the package came from.
      * @param callback An callback to get notified when the package installation is
      * complete.
      */
-    oneway void installPackage(in Uri packageURI, in int flags, in String packageName,
+    oneway void installPackage(in Uri packageURI, in int flags, in String installerPackageName,
                         in IPrivilegedCallback callback);
 
     /**
