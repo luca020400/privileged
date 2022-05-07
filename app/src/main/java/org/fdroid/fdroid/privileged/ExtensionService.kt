@@ -107,6 +107,7 @@ open class ExtensionService : Service() {
         packageUri: Uri,
         callback: IPrivilegedCallback
     ) {
+        packageManager.setInstallerPackageName(packageName, getPackageName())
         // 0. Generic try/catch block because I am not really sure what exceptions
         // might be thrown by PackageInstaller and I want to handle them
         // at least slightly gracefully.
