@@ -31,8 +31,8 @@ interface IPrivilegedService {
      * package named in the package file's manifest is already installed, or if there's no space
      * available on the device.
      *
-     * @param packageURI The location of the package file to install.  This can be a 'file:' or a
-     * 'content:' URI.
+     * @param packageURIs The location of the package file to install. This can be a list of:
+     * 'file:' or a 'content:' URI. Supports split packages
      * @param flags - possible values: {@link #INSTALL_FORWARD_LOCK},
      * {@link #INSTALL_REPLACE_EXISTING}, {@link #INSTALL_ALLOW_TEST}.
      * @param installerPackageName Optional package name of the application that is performing the
@@ -41,7 +41,7 @@ interface IPrivilegedService {
      * @param callback An callback to get notified when the package installation is
      * complete.
      */
-    oneway void installPackage(in Uri packageURI, in int flags, in String installerPackageName,
+    oneway void installPackage(in List<Uri> packageURIs, in int flags, in String installerPackageName,
                         in String packageName, in IPrivilegedCallback callback);
 
     /**
