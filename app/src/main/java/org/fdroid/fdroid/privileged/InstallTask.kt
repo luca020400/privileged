@@ -17,7 +17,7 @@ import java.io.OutputStream
 class InstallTask(
     private val contentResolver: ContentResolver,
     private val mPackageName: String,
-    private val mPackageURIs: List<Uri>,
+    private val mPackageURI: Uri,
     private val mCallback: IPrivilegedCallback,
     private val mSession: PackageInstaller.Session, private val mCommitCallback: IntentSender
 ) {
@@ -84,12 +84,10 @@ class InstallTask(
         try {
             val inputBuf = ByteArray(DEFAULT_BUFFER_SIZE)
             var bytesRead: Int
-            mPackageURIs.forEach { uri ->
-                inputStream = contentResolver.openInputStream(uri)!!
-                while (inputStream!!.read(inputBuf).also { bytesRead = it } > -1) {
-                    if (bytesRead > 0) {
-                        outputStream.write(inputBuf, 0, bytesRead)
-                    }
+            inputStream = contentResolver.openInputStream(mPackageURI)!!
+            while (inputStream.read(inputBuf).also { bytesRead = it } > -1) {
+                if (bytesRead > 0) {
+                    outputStream.write(inputBuf, 0, bytesRead)
                 }
             }
             outputStream.flush()

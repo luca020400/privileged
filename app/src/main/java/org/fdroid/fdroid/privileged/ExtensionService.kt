@@ -108,7 +108,7 @@ class ExtensionService : Service() {
     private fun install(
         installerPackageName: String? = this.packageName,
         packageName: String,
-        packageUris: List<Uri>,
+        packageUri: Uri,
         callback: IPrivilegedCallback
     ) {
         if (installerPackageName != null) {
@@ -158,7 +158,7 @@ class ExtensionService : Service() {
             // 2. Launch task to handle file operations.
             val task = InstallTask(
                 contentResolver,
-                packageName, packageUris,
+                packageName, packageUri,
                 callback, session,
                 getCommitCallback(packageName, sessionInfo!!.sessionId, callback)
             )
@@ -346,7 +346,7 @@ class ExtensionService : Service() {
         override fun hasPrivilegedPermissions() = mAccessProtectionHelper.isCallerAllowed()
 
         override fun installPackage(
-            packageURIs: List<Uri>,
+            packageURI: Uri,
             flags: Int,
             installerPackageName: String?,
             packageName: String,
@@ -356,7 +356,7 @@ class ExtensionService : Service() {
                 return
             }
 
-            install(installerPackageName, packageName, packageURIs, callback)
+            install(installerPackageName, packageName, packageURI, callback)
         }
 
         override fun deletePackage(
